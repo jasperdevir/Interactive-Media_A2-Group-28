@@ -1,55 +1,148 @@
-float rectX;
-float rectY;
+ArrayList<InstBox> instBoxes = new ArrayList<InstBox>();
+ArrayList<SlotBox> slotBoxes = new ArrayList<SlotBox>();
 
-float rectHomeX;
-float rectHomeY;
+float boxSize = 100;
 
-float rectSlotX;
-float rectSlotY;
+float instBoxBaseX;
+float instBoxBaseY;
 
-boolean rectDragged = false;
+float slotBoxX;
+float slotBoxY;
+
+float instBoxOffset;
+float slotBoxOffset;
+
+int heldBoxIndex;
 
 void setup(){
   background(255);
-  size(620,380);
+  size(1080, 720);
   
   rectMode(CENTER);
-  rectHomeX = width / 2;
-  rectHomeY = height * 0.8;
+  instBoxBaseX = width * 0.5;
+  instBoxBaseY = height * 0.8;
   
-  rectSlotX = width * 0.2;
-  rectSlotY = height * 0.2;
+  slotBoxX = width * 0.2;
+  slotBoxY = height * 0.2;
   
-  rectX = rectHomeX;
-  rectY = rectHomeY;
+  for(int i = 0; i < 4; i++){
+    slotBoxes.add(new SlotBox(slotBoxX, slotBoxY + slotBoxOffset, boxSize));
+    slotBoxOffset += boxSize + 10;
+  }
+  
+  for(int i = 0; i < 4; i++){
+    instBoxes.add(new InstBox(instBoxBaseX + instBoxOffset, instBoxBaseY, boxSize));
+    instBoxOffset += boxSize + 10;
+  }
+  
 }
 
-void draw(){
+void draw() {
   background(255);
-  if(rectDragged){
-    rectX = mouseX;
-    rectY = mouseY;
-  }
+  
   fill(0);
-  rect(rectSlotX, rectSlotY, 50, 50);
+  for (SlotBox box : slotBoxes) {
+    rect(box.x, box.y, box.size, box.size);
+  }
+  
   fill(255);
-  rect(rectX, rectY, 50, 50);
+  for (InstBox box : instBoxes) {
+    if(box.moving){
+      box.x = mouseX;
+      box.y = mouseY;
+    }
+    rect(box.x, box.y, box.size, box.size);
+  }
   
 }
 
-void mousePressed(){
-  if(mouseX >= rectX - 25 && mouseX <= rectX + 25){
-    rectDragged = true;
+void mousePressed() {
+  for (int i = 0; i < instBoxes.size(); i++) {
+    InstBox box = instBoxes.get(i);
+    if ((mouseX >= box.x - boxSize / 2 && mouseX <= box.x + boxSize / 2) && (mouseY >= box.y - boxSize / 2 && mouseY <= box.y + boxSize / 2)) {
+      heldBoxIndex = i;
+      box.moving = true;
+      box.xBase = box.x;
+      box.yBase = box.y;
+    }
+  }
+  println(heldBoxIndex);
+}
+
+void mouseReleased() {
+  InstBox heldBox = instBoxes.get(heldBoxIndex);
+  for (SlotBox slotBox : slotBoxes) {
+    if ((mouseX >= slotBox.x - boxSize / 2 && mouseX <= slotBox.x + boxSize / 2) && (mouseY >= slotBox.y - boxSize / 2 && mouseY <= slotBox.y + boxSize / 2)) {
+      if(slotBox.box != null){
+        slotBox.replace(heldBox);
+      } else {
+        slotBox.fill(heldBox);
+      }
+    } else {
+      if(slotBox.box != null){
+        slotBox.removeBox();
+      } else {
+        heldBox.returnBox();
+      }
+    }
   }
 }
 
-void mouseReleased(){
-  if(mouseX >= rectSlotX - 25 && mouseX <= rectSlotX + 25){
-    rectX = rectSlotX;
-    rectY = rectSlotY;
-  } else {
-    rectX = rectHomeX;
-    rectY = rectHomeY;
+class Box {
+  
+  float x;
+  float y;
+  float size;
+  
+  Box(float x, float y, float size){
+    this.x = x;
+    this.y = y;
+    this.size = size;
   }
-  rectDragged = false;
+}
+
+class InstBox extends Box {
+  
+  float xBase;
+  float yBase;
+  boolean moving;
+  
+  InstBox(float x, float y, float size){
+    super(x,y,size);
+     xBase = x;
+     yBase = y;
+     moving = false;
+  }
+  
+  void returnBox(){
+    x = xBase;
+    y = yBase;
+    moving = false;
+  }
+}
+
+class SlotBox extends Box {
+  
+  InstBox box;
+  
+  SlotBox(float x, float y, float size){
+    super(x,y,size);
+  }
+  
+  void fill(InstBox box){
+    this.box = box;
+    box.x = x;
+    box.y = y;
+    box.moving = false;
+  }
+  
+  void replace(InstBox newBox){
+    box.returnBox();
+    fill(newBox);
+  }
+  
+  void removeBox(){
+    box.returnBox();
+    box = null;
+  }
 }
