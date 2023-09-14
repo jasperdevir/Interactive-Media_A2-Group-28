@@ -1,7 +1,8 @@
 ArrayList<InstBox> instBoxes = new ArrayList<InstBox>();
 ArrayList<SlotBox> slotBoxes = new ArrayList<SlotBox>();
+Box[][] grid = new Box[4][8];
 
-float boxSize = 50;
+float boxSize = 100;
 
 float instBoxBaseX;
 float instBoxBaseY;
@@ -13,14 +14,15 @@ float slotBoxX;
 float slotBoxY;
 
 float instBoxOffset;
-float slotBoxOffsetBaseY;
 float slotBoxOffsetY;
 float slotBoxOffsetX;
 
-int heldBoxIndex;
+float gridX;
+float gridY;
+float gridOffsetY;
+float gridOffsetX;
 
-
-Box[][] grid = new Box[4][8];
+int heldBoxIndex = -1;
 
 
 
@@ -30,10 +32,13 @@ void setup(){
   
   rectMode(CENTER);
   instBoxBaseX = width * 0.5;
-  instBoxBaseY = height * 0.8;
+  instBoxBaseY = height * 0.9;
   
-  slotBoxX = width * 0.2;
+  slotBoxX = width * 0.15;
   slotBoxY = height * 0.2;
+
+  gridX = slotBoxX;
+  gridY = slotBoxY;
   
   for(int i = 0; i < 4; i++){
     slotBoxes.add(new SlotBox(slotBoxX, slotBoxY + slotBoxOffsetY, boxSize));
@@ -44,17 +49,13 @@ void setup(){
     instBoxes.add(new InstBox(instBoxBaseX + instBoxOffset, instBoxBaseY, boxSize));
     instBoxOffset += boxSize + 10;
   }
-  
-  slotBoxOffsetX += boxSize + 10;
-  slotBoxOffsetBaseY = slotBoxOffsetY;
-  
   for(int a = 0; a < 4; a++){
     for(int b = 0; b < 8; b++){
-      grid[a][b] = new Box(slotBoxX + slotBoxOffsetX, slotBoxY + slotBoxOffsetY, boxSize);
-      slotBoxOffsetX += boxSize + 10;
+      grid[a][b] = new Box(gridX + gridOffsetX, gridY + gridOffsetY, boxSize);
+      gridOffsetX += boxSize + 10;
     }
-    slotBoxOffsetX = slotBoxOffsetBaseY;
-    slotBoxOffsetY += boxSize + 10;
+    gridOffsetX = 0;
+    gridOffsetY += boxSize + 10;
   }
   
 }
@@ -99,18 +100,20 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  InstBox heldBox = instBoxes.get(heldBoxIndex);
-  for (SlotBox slotBox : slotBoxes) {
-    if ((mouseX >= slotBox.x - boxSize / 2 && mouseX <= slotBox.x + boxSize / 2) && (mouseY >= slotBox.y - boxSize / 2 && mouseY <= slotBox.y + boxSize / 2)) {
-      if(slotBox.box != null){
-        slotBox.replace(heldBox);
-      } else {
-        slotBox.fill(heldBox);
-      }
-      return;
-    } 
+  if(heldBoxIndex != -1){
+    InstBox heldBox = instBoxes.get(heldBoxIndex);
+    for (SlotBox slotBox : slotBoxes) {
+      if ((mouseX >= slotBox.x - boxSize / 2 && mouseX <= slotBox.x + boxSize / 2) && (mouseY >= slotBox.y - boxSize / 2 && mouseY <= slotBox.y + boxSize / 2)) {
+        if(slotBox.box != null){
+          slotBox.replace(heldBox);
+        } else {
+          slotBox.fill(heldBox);
+        }
+        return;
+      } 
+    }
+    heldBox.returnBox();
   }
-  heldBox.returnBox();
 }
 
 class Box {
