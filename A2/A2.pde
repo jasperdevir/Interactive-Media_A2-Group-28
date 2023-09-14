@@ -14,6 +14,11 @@ float slotBoxOffset;
 
 int heldBoxIndex;
 
+
+int[][] grid = new int[4][8];
+
+
+
 void setup(){
   background(255);
   size(1080, 720);
@@ -40,11 +45,26 @@ void setup(){
 void draw() {
   background(255);
   
+  noStroke();
+  for(int a = 0; a < 4; a++){
+    for(int b = 0; b < 8; b++){
+      if(grid[a][b] == 1){
+        fill(200);
+      } else {
+        fill(100);
+      }
+      rect();
+      gridRow +=
+    }
+    gridRow += 
+  }
+  
   fill(0);
   for (SlotBox box : slotBoxes) {
     rect(box.x, box.y, box.size, box.size);
   }
   
+  stroke(0);
   fill(255);
   for (InstBox box : instBoxes) {
     if(box.moving){
@@ -62,11 +82,8 @@ void mousePressed() {
     if ((mouseX >= box.x - boxSize / 2 && mouseX <= box.x + boxSize / 2) && (mouseY >= box.y - boxSize / 2 && mouseY <= box.y + boxSize / 2)) {
       heldBoxIndex = i;
       box.moving = true;
-      box.xBase = box.x;
-      box.yBase = box.y;
     }
   }
-  println(heldBoxIndex);
 }
 
 void mouseReleased() {
@@ -78,14 +95,10 @@ void mouseReleased() {
       } else {
         slotBox.fill(heldBox);
       }
-    } else {
-      if(slotBox.box != null){
-        slotBox.removeBox();
-      } else {
-        heldBox.returnBox();
-      }
-    }
+      return;
+    } 
   }
+  heldBox.returnBox();
 }
 
 class Box {
