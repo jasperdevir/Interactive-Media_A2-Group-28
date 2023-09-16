@@ -9,8 +9,8 @@ boolean[][] testData = new boolean[4][8];
 
 SoundFile[] instSound = new SoundFile[4];
 
-int tempo = 30;
-//60bpm = 60
+int tempo = 65;
+//60bpm = 65
 //90bpm = 40
 //120bpm = 30
 int barBeats = 4;
@@ -77,19 +77,23 @@ void setup(){
   
 
   testData[3][0] = true;
-  
-  testData[2][1] = true;
   testData[3][1] = true;
-  
-  testData[1][2] = true;
-  testData[2][2] = true;
   testData[3][2] = true;
-  
-  testData[0][3] = true;
-  testData[1][3] = true;
-  testData[2][3] = true;
   testData[3][3] = true;
+  testData[3][4] = true;
+  testData[3][5] = true;
+  testData[3][6] = true;
+  testData[3][7] = true;
   
+  testData[2][0] = true;
+  testData[2][1] = true;
+  testData[2][2] = true;
+  testData[2][3] = true;
+  testData[2][4] = true;
+  testData[2][5] = true;
+  testData[2][6] = true;
+  testData[2][7] = true;
+ 
   rectMode(CENTER);
   instBoxX = width * 0.2;
   instBoxY = height * 0.9;
@@ -112,8 +116,8 @@ void setup(){
   trackButtonX = slotBoxX + boxGap * 7;
   trackButtonY = playButtonY;
   
-  instSound[0] = (new SoundFile(this, "sine.wav"));
-  instSound[1] = (new SoundFile(this, "sine.wav"));
+  instSound[0] = (new SoundFile(this, "drums.mp3"));
+  instSound[1] = (new SoundFile(this, "bass.mp3"));
   instSound[2] = (new SoundFile(this, "sine.wav"));
   instSound[3] = (new SoundFile(this, "sine.wav"));
   
@@ -155,6 +159,12 @@ void setup(){
 void draw() {
   if(playing){
     frameCounter++;
+  } else {
+    for(SlotBox slot : slotBoxes){
+      if(slot.box != null){
+        slot.box.soundFile.stop();
+      }
+    }
   }
   background(255);
   noStroke();
@@ -254,7 +264,7 @@ void mousePressed() {
         buttons.get(0).pressed = true;
       } else if(button.function.equals("60")){
         button.pressed = true;
-        tempo = 60;
+        tempo = 65;
       } else if(button.function.equals("90")){
         button.pressed = true;
         tempo = 40;
