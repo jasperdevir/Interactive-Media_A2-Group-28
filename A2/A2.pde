@@ -7,13 +7,11 @@ GridBox[][] grid = new GridBox[4][8];
 
 boolean[][] testData = new boolean[4][8];
 
-SoundFile[] instSound = new SoundFile[4];
+SoundFile[] instSound60_A = new SoundFile[4];
 
-int tempo = 65;
-//60bpm = 65
-//90bpm = 40
-//120bpm = 30
-int barBeats = 4;
+float bpm = instSound60_A[0].duration() * 60;
+
+//int barBeats = 4;
 
 float frameCounter = 0;
 
@@ -116,10 +114,10 @@ void setup(){
   trackButtonX = slotBoxX + boxGap * 7;
   trackButtonY = playButtonY;
   
-  instSound[0] = (new SoundFile(this, "drums.mp3"));
-  instSound[1] = (new SoundFile(this, "bass.mp3"));
-  instSound[2] = (new SoundFile(this, "sine.wav"));
-  instSound[3] = (new SoundFile(this, "sine.wav"));
+  instSound60_A[0] = (new SoundFile(this, "drums.mp3"));
+  instSound60_A[1] = (new SoundFile(this, "bass.mp3"));
+  instSound60_A[2] = (new SoundFile(this, "arp.mp3"));
+  instSound60_A[3] = (new SoundFile(this, "sine.wav"));
   
   for(int i = 0; i < 4; i++){
     slotBoxes.add(new SlotBox(slotBoxX, slotBoxY + slotBoxOffsetY, boxSize));
@@ -127,7 +125,7 @@ void setup(){
   }
   
   for(int i = 0; i < 4; i++){
-    instBoxes.add(new InstBox(instBoxX + instBoxOffsetX, instBoxY, boxSize, instSound[i]));
+    instBoxes.add(new InstBox(instBoxX + instBoxOffsetX, instBoxY, boxSize, instSound60_A[i]));
     instBoxOffsetX += boxGap;
   }
   for(int a = 0; a < 4; a++){
@@ -221,7 +219,7 @@ void draw() {
   }
   
   
-  if (frameCounter >= tempo * barBeats) {
+  if (frameCounter >= bpm) {
     barNum++;
     frameCounter = 0;
     if(barNum >= 8) {
@@ -264,13 +262,10 @@ void mousePressed() {
         buttons.get(0).pressed = true;
       } else if(button.function.equals("60")){
         button.pressed = true;
-        tempo = 65;
       } else if(button.function.equals("90")){
         button.pressed = true;
-        tempo = 40;
       } else if(button.function.equals("120")){
         button.pressed = true;
-        tempo = 30;
       } else if(button.function.equals("ONE")){
         button.pressed = true;
         println("TRACK1");
