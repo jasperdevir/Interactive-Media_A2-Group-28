@@ -5,13 +5,19 @@ ArrayList<SlotBox> slotBoxes = new ArrayList<SlotBox>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 GridBox[][] grid = new GridBox[4][8];
 
-boolean[][] testData = new boolean[4][8];
+//people counter data
+boolean[][] data = new boolean[4][8];
 
+//sound files
 SoundFile[] instSound60_A = new SoundFile[4];
+SoundFile[] instSound60_B = new SoundFile[4];
+SoundFile[] instSound90_A = new SoundFile[4];
+SoundFile[] instSound90_B = new SoundFile[4];
+SoundFile[] instSound120_A = new SoundFile[4];
+SoundFile[] instSound120_B = new SoundFile[4];
 
-float bpm = instSound60_A[0].duration() * 60;
-
-//int barBeats = 4;
+float bpm;
+String bpmString = "60";
 
 float frameCounter = 0;
 
@@ -72,25 +78,6 @@ void setup(){
   frameRate(60);
   background(255);
   size(1080, 720);
-  
-
-  testData[3][0] = true;
-  testData[3][1] = true;
-  testData[3][2] = true;
-  testData[3][3] = true;
-  testData[3][4] = true;
-  testData[3][5] = true;
-  testData[3][6] = true;
-  testData[3][7] = true;
-  
-  testData[2][0] = true;
-  testData[2][1] = true;
-  testData[2][2] = true;
-  testData[2][3] = true;
-  testData[2][4] = true;
-  testData[2][5] = true;
-  testData[2][6] = true;
-  testData[2][7] = true;
  
   rectMode(CENTER);
   instBoxX = width * 0.2;
@@ -114,40 +101,83 @@ void setup(){
   trackButtonX = slotBoxX + boxGap * 7;
   trackButtonY = playButtonY;
   
-  instSound60_A[0] = (new SoundFile(this, "drums.mp3"));
-  instSound60_A[1] = (new SoundFile(this, "bass.mp3"));
-  instSound60_A[2] = (new SoundFile(this, "arp.mp3"));
-  instSound60_A[3] = (new SoundFile(this, "sine.wav"));
+  /*
+  instSound60_A[0] = (new SoundFile(this, ""));
+  instSound60_A[1] = (new SoundFile(this, ""));
+  instSound60_A[2] = (new SoundFile(this, ""));
+  instSound60_A[3] = (new SoundFile(this, ""));
   
+  instSound60_B[0] = (new SoundFile(this, ""));
+  instSound60_B[1] = (new SoundFile(this, ""));
+  instSound60_B[2] = (new SoundFile(this, ""));
+  instSound60_B[3] = (new SoundFile(this, ""));
+  
+  instSound90_A[0] = (new SoundFile(this, ""));
+  instSound90_A[1] = (new SoundFile(this, ""));
+  instSound90_A[2] = (new SoundFile(this, ""));
+  instSound90_A[3] = (new SoundFile(this, ""));
+  
+  instSound90_B[0] = (new SoundFile(this, ""));
+  instSound90_B[1] = (new SoundFile(this, ""));
+  instSound90_B[2] = (new SoundFile(this, ""));
+  instSound90_B[3] = (new SoundFile(this, ""));
+  
+  instSound120_A[0] = (new SoundFile(this, ""));
+  instSound120_A[1] = (new SoundFile(this, ""));
+  instSound120_A[2] = (new SoundFile(this, ""));
+  instSound120_A[3] = (new SoundFile(this, ""));
+  
+  instSound120_B[0] = (new SoundFile(this, ""));
+  instSound120_B[1] = (new SoundFile(this, ""));
+  instSound120_B[2] = (new SoundFile(this, ""));
+  instSound120_B[3] = (new SoundFile(this, "")); 
+  
+  bpm = instSound60_A[0].duration() * 60;
+  */
+  
+  /*
+  
+  fill data here:
+  
+  */
+  
+  
+  //create slotBoxes
   for(int i = 0; i < 4; i++){
     slotBoxes.add(new SlotBox(slotBoxX, slotBoxY + slotBoxOffsetY, boxSize));
     slotBoxOffsetY += boxGap;
   }
   
+  //create instBoxes
   for(int i = 0; i < 4; i++){
     instBoxes.add(new InstBox(instBoxX + instBoxOffsetX, instBoxY, boxSize, instSound60_A[i]));
     instBoxOffsetX += boxGap;
   }
+  
+  //create gridBoxes
   for(int a = 0; a < 4; a++){
     for(int b = 0; b < 8; b++){
       grid[a][b] = new GridBox(gridX + gridOffsetX, gridY + gridOffsetY, boxSize);
-      grid[a][b].addData(testData[a][b]);
+      grid[a][b].addData(data[a][b]);
       gridOffsetX += boxGap;
     }
     gridOffsetX = 0;
     gridOffsetY += boxGap;
   }
   
+  //create play buttons
   for(int i = 0; i < 2; i++){
     buttons.add(new Button(playButtonX + playButtonOffsetX, playButtonY, boxSize, playButtonFunc[i]));
     playButtonOffsetX += boxGap;
   }
   
+  //create tempo buttons
   for(int i = 0; i < 3; i++){
     buttons.add(new Button(tempoButtonX + tempoButtonOffsetX, tempoButtonY, boxSize, tempoButtonFunc[i]));
     tempoButtonOffsetX += boxGap;
   }
   
+  //create track buttons
   for(int i = 0; i < 2; i++){
     buttons.add(new Button(trackButtonX + trackButtonOffsetX, trackButtonY, boxSize, trackButtonFunc[i]));
     trackButtonX += boxGap;
@@ -164,8 +194,11 @@ void draw() {
       }
     }
   }
+  
   background(255);
   noStroke();
+  
+  //draw gridBoxes
   for(int a = 0; a < 4; a++){
     for(int b = 0; b < 8; b++){
       GridBox box = grid[a][b];
@@ -178,6 +211,7 @@ void draw() {
     }
   }
   
+  //draw bar indicator
   for(int i = 0; i < 8; i++){
     if (barNum == i){
       fill(barColorNum);
@@ -189,11 +223,13 @@ void draw() {
   }
   barOffsetX = 0;
   
+  //draw slotBoxes
   fill(slotColor);
   for (SlotBox box : slotBoxes) {
     rect(box.x, box.y, box.size, box.size);
   }
   
+  //draw buttons
   stroke(0);
   fill(buttonColor);
   for(Button button : buttons){
@@ -208,7 +244,7 @@ void draw() {
     rect(button.x, button.y, button.size, button.size);
   }
   
-  
+  //draw instBoxes
   fill(instColor);
   for (InstBox box : instBoxes) {
     if(box.moving){
@@ -232,12 +268,11 @@ void draw() {
         }
       }
     }
-  }
-  
-  
+  }  
 }
 
 void mousePressed() {
+  //instBox drag and drop
   for (int i = 0; i < instBoxes.size(); i++) {
     InstBox box = instBoxes.get(i);
     if ((mouseX >= box.x - boxSize / 2 && mouseX <= box.x + boxSize / 2) && (mouseY >= box.y - boxSize / 2 && mouseY <= box.y + boxSize / 2)) {
@@ -246,6 +281,7 @@ void mousePressed() {
     }
   }
   
+  //button interaction
   for(Button button : buttons){
     if ((mouseX >= button.x - boxSize / 2 && mouseX <= button.x + boxSize / 2) && (mouseY >= button.y - boxSize / 2 && mouseY <= button.y + boxSize / 2)) {
       if(button.function.equals("PAUSE") && !button.pressed){
@@ -262,16 +298,42 @@ void mousePressed() {
         buttons.get(0).pressed = true;
       } else if(button.function.equals("60")){
         button.pressed = true;
+        bpmString = "60";
+        bpm = instSound60_A[0].duration() * 60;
       } else if(button.function.equals("90")){
         button.pressed = true;
+        bpmString = "90";
+        bpm = instSound90_A[0].duration() * 60;
       } else if(button.function.equals("120")){
         button.pressed = true;
+        bpmString = "120";
+        bpm = instSound120_A[0].duration() * 60;
       } else if(button.function.equals("ONE")){
         button.pressed = true;
-        println("TRACK1");
-      }else if(button.function.equals("TWO")){
+        for(int i = 0; i < instBoxes.size(); i++){
+          if(bpmString.equals("60")){
+            instBoxes.get(i).soundFile = instSound60_A[i];
+          } else if (bpmString.equals("90")) {
+            instBoxes.get(i).soundFile = instSound90_A[i];
+          } else if (bpmString.equals("120")) {
+            instBoxes.get(i).soundFile = instSound120_A[i];
+          } else {
+            println("##Track button error");
+          }
+        }    
+      } else if(button.function.equals("TWO")){
         button.pressed = true;
-        println("TRACK2");
+        for(int i = 0; i < instBoxes.size(); i++){
+          if(bpmString == "60"){
+            instBoxes.get(i).soundFile = instSound60_B[i];
+          } else if (bpmString == "90") {
+            instBoxes.get(i).soundFile = instSound90_B[i];
+          } else if (bpmString == "120") {
+            instBoxes.get(i).soundFile = instSound120_B[i];
+          } else {
+            println("##Track button error");
+          }
+        }
       } else {
         println("##Button function error");
       }
@@ -280,18 +342,37 @@ void mousePressed() {
 }
 
 void mouseReleased() {
+  //instBoxes drag and drop
   if(heldBoxIndex != -1){
     InstBox heldBox = instBoxes.get(heldBoxIndex);
     heldBoxIndex = -1;
+    SlotBox orgBox = null;
+    
+    for (SlotBox slotBox : slotBoxes) {
+      if(slotBox.box == heldBox){
+        orgBox = slotBox;
+      }
+    }
+    
     for (SlotBox slotBox : slotBoxes) {
       if ((mouseX >= slotBox.x - boxSize / 2 && mouseX <= slotBox.x + boxSize / 2) && (mouseY >= slotBox.y - boxSize / 2 && mouseY <= slotBox.y + boxSize / 2)) {
         if(slotBox.box != null){
-          slotBox.replace(heldBox);
+          if(orgBox != null){
+            slotBox.swap(heldBox, orgBox);
+          } else {
+            slotBox.replace(heldBox);
+          }
         } else {
           slotBox.fill(heldBox);
         }
         return;
       } 
+    }
+    for (SlotBox slotBox : slotBoxes) {
+      if(slotBox.box == heldBox){
+        slotBox.removeBox();
+        return;
+      }
     }
     heldBox.returnBox();
   }
@@ -391,4 +472,9 @@ class SlotBox extends Box {
     box.returnBox();
     box = null;
   }
+  
+  void swap(InstBox newBox, SlotBox otherBox){
+    otherBox.fill(this.box);
+    this.fill(newBox);
+  } 
 }
