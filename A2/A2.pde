@@ -206,13 +206,9 @@ void setup() {
 
   // fill data here:
 
-  for (int x = 0; x < 8; x++) {
-    data[0][x] = true;
-    data[1][x] = true;
-    data[2][x] = true;
-    data[3][x] = true;
-  }
-
+  dataToSwitch("CB11.PC02.14.Broadway_ CB11.02.Broadway.East In");
+  
+  
   //create slotBoxes
   for (int i = 0; i < 4; i++) {
     slotBoxes.add(new SlotBox(slotBoxX, slotBoxY + slotBoxOffsetY, boxSize));
@@ -263,6 +259,9 @@ void setup() {
 
   minData = findMin(g_data);
   maxData = findMax(g_data);
+  
+  
+  
 }
 
 void draw() {
@@ -651,4 +650,62 @@ float findMax (ArrayList<Float> list) {
     }
   }
   return max;
+}
+
+void dataToSwitch(String fileName) {
+float[] dataArray;
+  Table table = loadTable(fileName + ".csv", "header");
+  int originalLength = table.getRowCount();
+  int newLength = originalLength - (originalLength % 8); // Calculate the nearest multiple of 8 less than or equal to originalLength
+
+  dataArray = new float[newLength];
+
+  for (int i = 0; i < newLength; i++) {
+    TableRow row = table.getRow(i);
+    dataArray[i] = row.getFloat(1);
+  }
+
+  // Generate 8 intervals based on the new length
+  int intervalSize = newLength / 8;
+  float[][] intervals8 = new float[8][];
+  float[] maxValues8 = new float[8];
+  
+  for (int i = 0; i < 8; i++) {
+    intervals8[i] = new float[intervalSize];
+    float maxInInterval = dataArray[i * intervalSize]; // Initialize max with the first value in the interval
+    for (int j = 0; j < intervalSize; j++) {
+      intervals8[i][j] = dataArray[i * intervalSize + j];
+      if (intervals8[i][j] > maxInInterval) {
+        maxInInterval = intervals8[i][j]; // Update max if a larger value is found
+      }
+    }
+    maxValues8[i] = maxInInterval;
+    println("Interval 8-" + (i + 1) + ": Max Value: " + maxInInterval);
+  }
+
+  // Calculate the maximum value in the original array
+  float maxVal = dataArray[0];
+  for (int i = 1; i < newLength; i++) {
+    if (dataArray[i] > maxVal) {
+      maxVal = dataArray[i];
+    }
+  }
+
+ 
+
+  // Generate 4 intervals based on the max value
+  float intervalSizeMax = maxVal / 4;
+  for (int i = 0; i < 4; i++) {
+    float start = i * intervalSizeMax;
+    float end = (i + 1) * intervalSizeMax;
+
+    // Check if each data point falls within this interval and update the data array
+    for (int j = 0; j < 8; j++) {
+      if (start <= maxValues8[j] && maxValues8[j] <= end) {
+        for (int k = 0; k <= i; k++) {
+          data[3 - k][j] = true; // Reverse the first dimension
+        }
+      }
+    }
+  }
 }
